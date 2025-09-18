@@ -13,10 +13,10 @@ public enum HttpsCodeEnum {
     RESOURCE_NOT_FOUND(404, "请求的资源不存在");
 
     private final Integer code;
-    private final String message;
+    private final String msg;
 
-    HttpsCodeEnum(Integer code, String message) {
+    HttpsCodeEnum(Integer code, String msg) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
     }
 }

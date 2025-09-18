@@ -6,17 +6,17 @@ import lombok.Data;
 @Data
 public class Result<T> {
     private Integer code;
-    private String message;
+    private String msg;
     private T data;
 
-    private Result(Integer code, String message, T data) {
+    private Result(Integer code, String msg, T data) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
         this.data = data;
     }
 
     public static <T> Result<T> success(T data) {
-        return new Result<>(HttpsCodeEnum.SUCCESS.getCode(), HttpsCodeEnum.SUCCESS.getMessage(), data);
+        return new Result<>(HttpsCodeEnum.SUCCESS.getCode(), HttpsCodeEnum.SUCCESS.getMsg(), data);
     }
 
     public static <T> Result<T> success() {
@@ -24,11 +24,11 @@ public class Result<T> {
     }
 
     public static <T> Result<T> error(HttpsCodeEnum httpsCodeEnum) {
-        return new Result<>(httpsCodeEnum.getCode(), httpsCodeEnum.getMessage(), null);
+        return new Result<>(httpsCodeEnum.getCode(), httpsCodeEnum.getMsg(), null);
     }
 
-    public static <T> Result<T> error(Integer code, String message) {
-        return new Result<>(code, message, null);
+    public static <T> Result<T> error(Integer code, String msg) {
+        return new Result<>(code, msg, null);
     }
 
     public static <T> Result<T> error(HttpsCodeEnum httpsCodeEnum, String customMessage) {

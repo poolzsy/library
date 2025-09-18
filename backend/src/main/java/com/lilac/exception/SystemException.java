@@ -9,7 +9,7 @@ public class SystemException extends RuntimeException {
 
     // 主构造函数：接收枚举
     public SystemException(HttpsCodeEnum httpsCodeEnum) {
-        super(httpsCodeEnum.getMessage());
+        super(httpsCodeEnum.getMsg());
         this.code = httpsCodeEnum.getCode();
     }
 
