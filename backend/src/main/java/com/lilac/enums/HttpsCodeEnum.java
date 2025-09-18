@@ -9,6 +9,7 @@ public enum HttpsCodeEnum {
 
     BAD_REQUEST(400, "无效的请求参数"),
     USER_NOT_LOGIN(401, "未授权"),
+    NEED_LOGIN(400001, "需要登录"),
     RESOURCE_NOT_FOUND(404, "请求的资源不存在");
 
     private final Integer code;
