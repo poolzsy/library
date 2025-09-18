@@ -2,7 +2,6 @@ package com.lilac.controller;
 
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.result.Result;
-import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -29,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userMapper.findByUsername(username);
         if (Objects.isNull(user)){
-            throw new SystemException(HttpsCodeEnum.SYSTEM_ERROR);
+            throw new UsernameNotFoundException(HttpsCodeEnum.USER_OR_PASSWORD_ERROR.getMsg());
         }
         // TODO 权限
         return new LoginUser(user, null);

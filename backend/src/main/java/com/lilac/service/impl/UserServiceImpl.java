@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             // 调用认证管理器进行认证
             authenticate = authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
-            throw new SystemException(HttpsCodeEnum.SYSTEM_ERROR);
+            throw new SystemException(HttpsCodeEnum.USER_OR_PASSWORD_ERROR);
         }
         // 生成token
         return jwtUtils.generateToken(authenticate.getName());
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     public void register(UserLoginDTO loginDTO) {
         // 检查用户名是否已存在
         if (userMapper.findByUsername(loginDTO.getUsername()) != null) {
-            throw new SystemException(HttpsCodeEnum.SYSTEM_ERROR);
+            throw new SystemException(HttpsCodeEnum.USER_EXIST);
         }
         // 使用BCrypt对明文密码进行哈希处理
         String hashedPassword = passwordEncoder.encode(loginDTO.getPassword());
