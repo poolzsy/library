@@ -1,6 +1,8 @@
 package com.lilac.mapper;
 
+import com.lilac.annotation.AutoFill;
 import com.lilac.domain.entity.User;
+import com.lilac.enums.OperationType;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -25,8 +27,8 @@ public interface UserMapper{
     /**
      * 保存用户
      *
-     * @param newUser 用户
+     * @param user 用户
      */
-    @Insert("insert into user(username, password) values(#{username}, #{password})")
-    void save(User newUser);
+    @AutoFill(OperationType.INSERT)
+    void save(User user);
 }

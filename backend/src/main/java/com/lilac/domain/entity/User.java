@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -29,9 +30,9 @@ public class User {
     //邮箱
     private String email;
     //创建时间
-    private Date createTime;
+    private LocalDateTime createTime;
     //修改时间
-    private Date updateTime;
+    private LocalDateTime updateTime;
     //逻辑删除(0未删除，1删除)
     private String delFlag;
 
