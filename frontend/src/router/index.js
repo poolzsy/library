@@ -16,4 +16,24 @@ const router = createRouter({
   ],
 })
 
+// 全局前置守卫
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  const whiteList = ['/login'];
+  if (token) {
+    // 如果用户已登录
+    if (to.path === '/login') {
+      next({ path: '/' });
+    } else {
+      next();
+    }
+  } else {
+    if (whiteList.includes(to.path)) {
+      next();
+    } else {
+      next('/login');
+    }
+  }
+});
+
 export default router
