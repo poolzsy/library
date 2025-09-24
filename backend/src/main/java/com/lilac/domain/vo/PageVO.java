@@ -1,0 +1,16 @@
+package com.lilac.domain.vo;
+
+import com.lilac.domain.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class PageVO {
+    private Long total;
+    private List<User> rows;
+}

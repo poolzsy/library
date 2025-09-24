@@ -5,4 +5,22 @@
         insert into user (username, password, nickname, phone, email, create_time, update_time, del_flag)
         values (#{username}, #{password}, #{nickname}, #{phone}, #{email}, #{createTime}, #{updateTime}, #{delFlag})
     </insert>
+
+    <update id="update">
+        update user set username = #{username}, password = #{password}, nickname = #{nickname}, phone = #{phone}, email = #{email}, update_time = #{updateTime} where id = #{id}
+    </update>
+
+    <select id="listAll" resultType="com.lilac.domain.entity.User">
+        select * from user where del_flag = 0 order by id
+    </select>
+
+    <select id="page" resultType="com.lilac.domain.entity.User">
+        select * from user
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%',#{username},'%')
+            </if>
+        </where>
+        order by sort asc , create_time desc
+    </select>
 </mapper>
