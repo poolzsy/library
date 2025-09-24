@@ -116,7 +116,6 @@ const handleSubmit = () => {
 const handleLogin = async () => {
     const loginData = { username: form.username, password: form.password, code: form.code };
     const res = await login(loginData);
-    console.log('登录成功，后端返回:', res);
 
     localStorage.setItem('token', res.data.token);
     ElMessage.success('登录成功！');

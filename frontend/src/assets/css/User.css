@@ -1,0 +1,65 @@
+/* 整体卡片式布局容器 */
+.board {
+    background-color: #ffffff;
+    /* 内边距，让内容不要紧贴边框 */
+    padding: 20px;
+    /* 圆角，与整体风格保持一致 */
+    border-radius: 8px;
+    /* 添加细微阴影，提升卡片的层次感 */
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 搜索和操作区域 */
+.search {
+    /* 使用 Flexbox 布局，让内部元素水平对齐 */
+    display: flex;
+    /* 垂直居中对齐 */
+    align-items: center;
+    /* 元素之间的间距 */
+    gap: 15px;
+    /* 与下方的表格之间留出间距 */
+    margin-bottom: 20px;
+}
+
+/* 搜索输入框样式 */
+.search .search-input {
+    /* 给输入框一个合适的宽度 */
+    width: 300px;
+}
+
+/* 为了让按钮组更清晰，我们给“清空”按钮一个不同的样式 */
+/* (这需要您在 User.vue 中移除“清空”按钮的 type="primary") */
+.search .clearn {
+    /* 移除 clearn 按钮上的 primary 样式，改为默认样式 */
+}
+
+/* 表格区域 */
+.table {
+    width: 100%;
+}
+
+/* --- Element Plus 表格深度美化 --- */
+
+/* 美化表头，使其更醒目 */
+.el-table th.el-table__cell {
+    background-color: #fafafa !important; /* 使用浅灰色背景 */
+    color: #333; /* 字体颜色加深 */
+    font-weight: 600; /* 字体加粗 */
+}
+
+/* 给整个表格添加一个细边框和圆角 */
+.el-table {
+    border: 1px solid #ebeef5;
+    border-radius: 4px;
+}
+
+/* 移除表格自带的一些多余边框效果，让我们的单一边框更干净 */
+.el-table--border::after,
+.el-table--group::after,
+.el-table::before {
+    background-color: transparent;
+}
+
+.add-btn {
+    margin-left: auto;
+}
