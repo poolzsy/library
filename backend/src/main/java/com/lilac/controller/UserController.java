@@ -54,19 +54,10 @@ public class UserController {
     }
 
     /**
-     * 查询所有用户
-     */
-    @GetMapping("/listAll")
-    public Result listAll() {
-        log.info("查询所有用户");
-        return Result.success(userService.listAll());
-    }
-
-    /**
      * 新增用户信息
      */
     @PostMapping("/save")
-    public Result<String> save(@RequestBody UserDTO userDTO) {
+    public Result save(@RequestBody UserDTO userDTO) {
         log.info("新增用户");
         userService.save(userDTO);
         return Result.success();
@@ -76,7 +67,7 @@ public class UserController {
      * 删除用户
      */
     @DeleteMapping("/delete/{id}")
-    public Result<String> delete(@PathVariable Integer id) {
+    public Result delete(@PathVariable Integer id) {
         log.info("删除用户");
         userService.delete(id);
         return Result.success();
@@ -86,7 +77,7 @@ public class UserController {
      * 修改用户信息
      */
     @PutMapping("/update")
-    public Result<String> update(@RequestBody User user) {
+    public Result update(@RequestBody User user) {
         log.info("修改用户信息");
         userService.update(user);
         return Result.success();

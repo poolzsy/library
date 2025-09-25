@@ -1,5 +1,6 @@
 package com.lilac.config;
 
+import com.lilac.filter.JwtAuthenticationTokenFilter;
 import com.lilac.handler.security.AuthenticationEntryPointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,11 +12,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
     @Autowired
     private AuthenticationEntryPointImpl authenticationEntryPoint;
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     /**
      * 密码编码器
@@ -36,14 +40,20 @@ public class SecurityConfig {
                 // 请求权限配置
                 .authorizeHttpRequests(authz -> authz
                         // 允许访问的公开接口
-                        .requestMatchers("/login","register").permitAll()
-                        // 其他所有请求都需要认证(先暂时放开所有端口)
-                        .anyRequest().permitAll()
+                        .requestMatchers("/user/login","/user/register").permitAll()
+                        // 其他所有请求都需要认证
+                        .anyRequest().authenticated()
                 )
                 // 异常处理
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(authenticationEntryPoint)
                 );
+
+        // 关闭默认的注销功能
+        http.logout(AbstractHttpConfigurer::disable);
+
+        // 添加自定义过滤器
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

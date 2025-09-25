@@ -2,9 +2,11 @@ package com.lilac.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.lilac.constant.SystemConstant;
 import com.lilac.domain.dto.PageDTO;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
+import com.lilac.domain.entity.LoginUser;
 import com.lilac.domain.entity.User;
 import com.lilac.domain.vo.PageVO;
 import com.lilac.enums.HttpsCodeEnum;
@@ -12,6 +14,7 @@ import com.lilac.exception.SystemException;
 import com.lilac.mapper.UserMapper;
 import com.lilac.service.UserService;
 import com.lilac.utils.JwtUtils;
+import com.lilac.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +39,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RedisCache redisCache;
 
     /**
      * 登录
@@ -60,8 +63,14 @@ public class UserServiceImpl implements UserService {
         } catch (BadCredentialsException e) {
             throw new SystemException(HttpsCodeEnum.USER_OR_PASSWORD_ERROR);
         }
-        // 生成token
-        return jwtUtils.generateToken(authenticate.getName());
+        // 获取userId，生成token
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        String userId = loginUser.getUser().getId().toString();
+        String jwt = JwtUtils.createJWT(userId);
+
+        // 存入redis
+        redisCache.setCacheObject(SystemConstant.USER_LOGIN_KEY + userId, loginUser);
+        return jwt;
     }
 
     /**
@@ -94,16 +103,6 @@ public class UserServiceImpl implements UserService {
     public User selectById(Integer id) {
         User user = userMapper.selectById(id);
         return user;
-    }
-
-    /**
-     * 查询所有用户
-     *
-     * @return
-     */
-    @Override
-    public List listAll() {
-        return userMapper.listAll();
     }
 
     /**
@@ -141,7 +140,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(User user) {
         User existingUser = userMapper.findByUsername(user.getUsername());
-        if (existingUser != null) {
+        if (existingUser != null && !existingUser.getId().equals(user.getId())) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         }
         User newUser = new User();
@@ -173,7 +172,7 @@ public class UserServiceImpl implements UserService {
      */
     public void setPassword(User user) {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode("123456"));
+            user.setPassword(passwordEncoder.encode(SystemConstant.DEFINED_PASSWORD));
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }

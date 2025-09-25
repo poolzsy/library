@@ -30,11 +30,6 @@ public interface UserService{
     User selectById(Integer id);
 
     /**
-     * 查询所有用户
-     */
-    List listAll();
-
-    /**
      * 新增用户信息
      */
     void save(UserDTO userDTO);

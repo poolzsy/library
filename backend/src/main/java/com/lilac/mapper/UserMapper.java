@@ -42,13 +42,6 @@ public interface UserMapper{
     User selectById(Integer id);
 
     /**
-     * 查询所有用户
-     *
-     * @return 用户列表
-     */
-    List<User> listAll();
-
-    /**
      * 删除用户
      *
      * @param id 用户id

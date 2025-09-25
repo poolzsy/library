@@ -1,12 +1,16 @@
 package com.lilac.domain.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.lilac.enums.HttpsCodeEnum;
 import lombok.Data;
 
 @Data
 public class Result<T> {
+    @JSONField(ordinal = 1)
     private Integer code;
+    @JSONField(ordinal = 2)
     private String msg;
+    @JSONField(ordinal = 3)
     private T data;
 
     private Result(Integer code, String msg, T data) {
