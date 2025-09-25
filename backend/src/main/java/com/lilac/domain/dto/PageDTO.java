@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageDTO {
-    Integer PageNum;
-    Integer PageSize;
-    String username;
+    private Integer pageNum;
+    private Integer pageSize;
+    private String username;
 }

@@ -1,19 +1,18 @@
 package com.lilac.service.impl;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lilac.domain.dto.PageDTO;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.User;
-import com.lilac.domain.result.Result;
 import com.lilac.domain.vo.PageVO;
 import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.exception.SystemException;
 import com.lilac.mapper.UserMapper;
 import com.lilac.service.UserService;
 import com.lilac.utils.JwtUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +31,7 @@ import java.util.List;
  */
 @SuppressWarnings({"all"})
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
@@ -64,7 +64,6 @@ public class UserServiceImpl implements UserService {
         return jwtUtils.generateToken(authenticate.getName());
     }
 
-
     /**
      * 注册
      *
@@ -92,9 +91,9 @@ public class UserServiceImpl implements UserService {
      * @param id 用户id
      */
     @Override
-    public Result selectById(Integer id) {
+    public User selectById(Integer id) {
         User user = userMapper.selectById(id);
-        return Result.success(user);
+        return user;
     }
 
     /**
@@ -131,7 +130,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void delete(Integer id) {
-        userMapper.deleteByid(id);
+        userMapper.deleteById(id);
     }
 
     /**
@@ -140,15 +139,18 @@ public class UserServiceImpl implements UserService {
      * @param userDTO
      */
     @Override
-    public void update(UserDTO userDTO) {
-        if (userMapper.findByUsername(userDTO.getUsername()) != null) {
+    public void update(User user) {
+        User existingUser = userMapper.findByUsername(user.getUsername());
+        if (existingUser != null) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
-        } else {
-            User user = new User();
-            BeanUtils.copyProperties(userDTO, user);
-            setPassword(user);
-            userMapper.update(user);
         }
+        User newUser = new User();
+        BeanUtils.copyProperties(user, newUser);
+        // 只有当传入的密码不为空时才更新密码
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        userMapper.update(newUser);
     }
 
     /**
@@ -159,20 +161,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageVO page(PageDTO pageDTO) {
-        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<User> userList = userMapper.page(pageDTO);
-        // TODO 待修改
+        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum());
+        List<User> userList = userMapper.pageList(pageDTO);
         PageInfo<User> pageInfo = new PageInfo<>(userList);
-        return new PageVO(pageInfo.getTotal(), pageInfo.getList());
+        PageVO page = new PageVO(pageInfo.getTotal(), pageInfo.getList());
+        return page;
     }
 
     /**
      * 设置默认密码
      */
-    public void setPassword(User user){
-        if(user.getPassword() == null){
-            String hashedPassword = passwordEncoder.encode("123456");
-        }else {
+    public void setPassword(User user) {
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode("123456"));
+        } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
     }

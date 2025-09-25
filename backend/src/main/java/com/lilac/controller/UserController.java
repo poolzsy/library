@@ -3,11 +3,11 @@ package com.lilac.controller;
 import com.lilac.domain.dto.PageDTO;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
+import com.lilac.domain.entity.User;
 import com.lilac.domain.result.Result;
 import com.lilac.domain.vo.PageVO;
 import com.lilac.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,9 +48,8 @@ public class UserController {
      * 根据id查询修用户
      */
     @GetMapping("/{id}")
-    public Result list(Integer id) {
-        log.info("用户列表");
-        // TODO 封装问题
+    public Result getUserById(@PathVariable Integer id) {
+        log.info("根据ID查询用户: {}", id);
         return Result.success(userService.selectById(id));
     }
 
@@ -58,18 +57,17 @@ public class UserController {
      * 查询所有用户
      */
     @GetMapping("/listAll")
-    public Result<List<User>> listAll() {
+    public Result listAll() {
         log.info("查询所有用户");
-        List<User> users = userService.listAll();
-        return Result.success(users);
+        return Result.success(userService.listAll());
     }
 
     /**
      * 新增用户信息
      */
     @PostMapping("/save")
-    public Result<String> post(@RequestBody UserDTO userDTO) {
-        log.info("新增用户信息");
+    public Result<String> save(@RequestBody UserDTO userDTO) {
+        log.info("新增用户");
         userService.save(userDTO);
         return Result.success();
     }
@@ -88,10 +86,9 @@ public class UserController {
      * 修改用户信息
      */
     @PutMapping("/update")
-    public Result<String> update(@RequestBody UserDTO userDTO) {
+    public Result<String> update(@RequestBody User user) {
         log.info("修改用户信息");
-        userService.update(userDTO);
-        // TODO id
+        userService.update(user);
         return Result.success();
     }
 
@@ -100,7 +97,7 @@ public class UserController {
      */
     @GetMapping("/list")
     public Result page(PageDTO pageDTO) {
-        log.info("将用户分页展示");
+        log.info("分页查询");
         PageVO pagevo = userService.page(pageDTO);
         return Result.success(pagevo);
     }

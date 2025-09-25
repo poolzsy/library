@@ -3,7 +3,7 @@ package com.lilac.service;
 import com.lilac.domain.dto.PageDTO;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
-import com.lilac.domain.result.Result;
+import com.lilac.domain.entity.User;
 import com.lilac.domain.vo.PageVO;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public interface UserService{
     /**
      * 根据id查询用户
      */
-    Result selectById(Integer id);
+    User selectById(Integer id);
 
     /**
      * 查询所有用户
@@ -47,7 +47,7 @@ public interface UserService{
     /**
      * 修改用户信息
      */
-    void update(UserDTO userDTO);
+    void update(User user);
 
     /**
      * 分页查询用户

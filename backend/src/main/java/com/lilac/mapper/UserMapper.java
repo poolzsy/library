@@ -1,6 +1,5 @@
 package com.lilac.mapper;
 
-import com.github.pagehelper.Page;
 import com.lilac.annotation.AutoFill;
 import com.lilac.domain.dto.PageDTO;
 import com.lilac.domain.entity.User;
@@ -35,7 +34,7 @@ public interface UserMapper{
     void save(User user);
 
     /**
-     * 查询用户
+     * 根据id查询用户
      *
      * @return 用户
      */
@@ -55,7 +54,7 @@ public interface UserMapper{
      * @param id 用户id
      */
     @Update("update user set del_flag = 1 where id = #{id}")
-    void deleteByid(Integer id);
+    void deleteById(Integer id);
 
     /**
      * 修改用户
@@ -70,5 +69,5 @@ public interface UserMapper{
      *
      * @return 用户列表
      */
-    List<User> page(PageDTO pageDTO);
+    List<User> pageList(PageDTO pageDTO);
 }
