@@ -1,0 +1,73 @@
+/* 整体容器 */
+.home-container {
+    padding: 20px;
+}
+
+/* 欢迎语区域 */
+.welcome-header {
+    margin-bottom: 20px;
+    padding: 24px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.welcome-header .main-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #303133;
+    margin: 0;
+}
+
+.welcome-header .sub-title {
+    font-size: 14px;
+    color: #909399;
+    margin-top: 8px;
+}
+
+/* 统计卡片 */
+.stat-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-card .icon-wrapper {
+    font-size: 48px;
+    opacity: 0.8;
+}
+
+.stat-card .text-wrapper {
+    text-align: right;
+}
+
+.stat-card .stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.stat-card .stat-label {
+    font-size: 14px;
+    color: #909399;
+    margin-top: 4px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+}
+
+.el-card__header {
+    font-weight: 600;
+}
