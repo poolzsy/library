@@ -9,10 +9,12 @@ import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.LoginUser;
 import com.lilac.domain.entity.User;
 import com.lilac.domain.vo.PageVO;
+import com.lilac.domain.vo.UserVO;
 import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.exception.SystemException;
 import com.lilac.mapper.UserMapper;
 import com.lilac.service.UserService;
+import com.lilac.utils.BeanCopyUtils;
 import com.lilac.utils.JwtUtils;
 import com.lilac.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
@@ -160,9 +162,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageVO page(PageDTO pageDTO) {
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum());
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<User> userList = userMapper.pageList(pageDTO);
-        PageInfo<User> pageInfo = new PageInfo<>(userList);
+        List<UserVO> userVOList = BeanCopyUtils.copyBeanList(userList, UserVO.class);
+        PageInfo<UserVO> pageInfo = new PageInfo<>(userVOList);
         PageVO page = new PageVO(pageInfo.getTotal(), pageInfo.getList());
         return page;
     }
@@ -177,5 +180,4 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
     }
-
 }

@@ -25,7 +25,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         authException.printStackTrace();
         Result result = null;
         if (authException instanceof BadCredentialsException){
-            result = Result.error(HttpsCodeEnum.USER_OR_PASSWORD_ERROR, authException.getMessage());
+            result = Result.error(HttpsCodeEnum.USER_OR_PASSWORD_ERROR);
         } else if (authException instanceof InsufficientAuthenticationException) {
             result = Result.error(HttpsCodeEnum.NEED_LOGIN);
         }else {

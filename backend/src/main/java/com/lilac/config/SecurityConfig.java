@@ -55,6 +55,9 @@ public class SecurityConfig {
         // 添加自定义过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
+        // 允许跨域
+        http.cors(cors -> {});
+
         return http.build();
     }
 
