@@ -3,8 +3,9 @@ package com.lilac.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.lilac.constant.SystemConstant;
-import com.lilac.domain.dto.PageDTO;
+import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserDTO;
+import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.LoginUser;
 import com.lilac.domain.entity.User;
@@ -92,6 +93,7 @@ public class UserServiceImpl implements UserService {
         User newUser = new User();
         newUser.setUsername(loginDTO.getUsername());
         newUser.setPassword(hashedPassword);
+        newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
 
         userMapper.save(newUser);
     }
@@ -113,15 +115,17 @@ public class UserServiceImpl implements UserService {
      * @param userSaveDTO
      */
     @Override
-    public void save(UserDTO userDTO) {
-        if (userMapper.findByUsername(userDTO.getUsername()) != null) {
+    public void save(AddUserDTO addUserDTO) {
+        if (userMapper.findByUsername(addUserDTO.getUsername()) != null) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         } else {
             User newUser = new User();
-            BeanUtils.copyProperties(userDTO, newUser);
+            BeanUtils.copyProperties(addUserDTO, newUser);
             setPassword(newUser);
+            newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
             userMapper.save(newUser);
         }
+        // TODO 关联角色
     }
 
     /**
@@ -132,6 +136,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Integer id) {
         userMapper.deleteById(id);
+        // TODO 删除用户角色关联
     }
 
     /**
@@ -152,6 +157,8 @@ public class UserServiceImpl implements UserService {
             newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userMapper.update(newUser);
+
+        // TODO 修改用户角色关联
     }
 
     /**
@@ -161,9 +168,9 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public PageVO page(PageDTO pageDTO) {
-        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<User> userList = userMapper.pageList(pageDTO);
+    public PageVO page(UserDTO userDTO) {
+        PageHelper.startPage(userDTO.getPageNum(), userDTO.getPageSize());
+        List<User> userList = userMapper.pageList(userDTO);
         List<UserVO> userVOList = BeanCopyUtils.copyBeanList(userList, UserVO.class);
         PageInfo<UserVO> pageInfo = new PageInfo<>(userVOList);
         PageVO page = new PageVO(pageInfo.getTotal(), pageInfo.getList());
@@ -175,7 +182,7 @@ public class UserServiceImpl implements UserService {
      */
     public void setPassword(User user) {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(SystemConstant.DEFINED_PASSWORD));
+            user.setPassword(passwordEncoder.encode(SystemConstant.DEFAULT_PASSWORD));
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }

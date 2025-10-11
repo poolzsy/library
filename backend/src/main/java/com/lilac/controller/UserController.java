@@ -1,7 +1,7 @@
 package com.lilac.controller;
 
-import com.lilac.domain.dto.PageDTO;
 import com.lilac.domain.dto.UserDTO;
+import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.User;
 import com.lilac.domain.result.Result;
@@ -57,9 +57,9 @@ public class UserController {
      * 新增用户信息
      */
     @PostMapping("/save")
-    public Result save(@RequestBody UserDTO userDTO) {
+    public Result save(@RequestBody AddUserDTO addUserDTO) {
         log.info("新增用户");
-        userService.save(userDTO);
+        userService.save(addUserDTO);
         return Result.success();
     }
 
@@ -87,9 +87,9 @@ public class UserController {
      * 分页查询用户
      */
     @GetMapping("/list")
-    public Result page(PageDTO pageDTO) {
+    public Result page(UserDTO userDTO) {
         log.info("分页查询");
-        PageVO pagevo = userService.page(pageDTO);
+        PageVO pagevo = userService.page(userDTO);
         return Result.success(pagevo);
     }
 }

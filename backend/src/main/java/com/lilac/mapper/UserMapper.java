@@ -1,7 +1,7 @@
 package com.lilac.mapper;
 
 import com.lilac.annotation.AutoFill;
-import com.lilac.domain.dto.PageDTO;
+import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.entity.User;
 import com.lilac.enums.OperationType;
 import org.apache.ibatis.annotations.*;
@@ -62,5 +62,5 @@ public interface UserMapper{
      *
      * @return 用户列表
      */
-    List<User> pageList(PageDTO pageDTO);
+    List<User> pageList(UserDTO userDTO);
 }

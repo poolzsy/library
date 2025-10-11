@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
+    private Integer pageNum;
+    private Integer pageSize;
     private String username;
-    private String nickname;
-    private String password;
-    private String phone;
-    private String email;
 }

@@ -1,6 +1,6 @@
 package com.lilac.service;
 
-import com.lilac.domain.dto.PageDTO;
+import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.User;
@@ -32,7 +32,7 @@ public interface UserService{
     /**
      * 新增用户信息
      */
-    void save(UserDTO userDTO);
+    void save(AddUserDTO addUserDTO);
 
     /**
      * 删除用户
@@ -47,5 +47,5 @@ public interface UserService{
     /**
      * 分页查询用户
      */
-    PageVO page(PageDTO pageDTO);
+    PageVO page(UserDTO userDTO);
 }

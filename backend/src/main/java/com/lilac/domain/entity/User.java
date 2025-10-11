@@ -12,7 +12,6 @@ import java.util.Date;
  *
  * @author lilac
  */
-@SuppressWarnings("serial")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,6 +28,8 @@ public class User {
     private String phone;
     //邮箱
     private String email;
+    //用户类型(0普通用户，1管理员)
+    private String type;
     //创建时间
     private LocalDateTime createTime;
     //修改时间
