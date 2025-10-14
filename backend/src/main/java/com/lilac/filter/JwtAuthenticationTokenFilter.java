@@ -1,6 +1,7 @@
 package com.lilac.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.lilac.constant.ExceptionConstant;
 import com.lilac.constant.SystemConstant;
 import com.lilac.domain.entity.LoginUser;
 import com.lilac.domain.result.Result;
@@ -56,7 +57,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             e.printStackTrace();
             // token超时 token非法
-            Result result = Result.error(HttpsCodeEnum.NEED_LOGIN);
+            Result result = Result.error(HttpsCodeEnum.NEED_LOGIN, ExceptionConstant.TOKEN_OVER_TIMEOUT);
             WebUtils.renderString(response, JSON.toJSONString(result));
             return;
         }

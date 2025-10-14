@@ -5,14 +5,15 @@ import com.github.pagehelper.PageInfo;
 import com.lilac.constant.SystemConstant;
 import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserDTO;
-import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.LoginUser;
 import com.lilac.domain.entity.User;
+import com.lilac.domain.entity.UserRole;
 import com.lilac.domain.vo.PageVO;
 import com.lilac.domain.vo.UserVO;
 import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.exception.SystemException;
+import com.lilac.mapper.RoleMapper;
 import com.lilac.mapper.UserMapper;
 import com.lilac.service.UserService;
 import com.lilac.utils.BeanCopyUtils;
@@ -27,8 +28,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务实现类
@@ -56,7 +59,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public String login(UserLoginDTO loginDTO) {
-        // 解密前端加密的密码
+        // 解密密码
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
         // 调用认证管理器进行认证
         Authentication authenticate;
@@ -115,6 +118,7 @@ public class UserServiceImpl implements UserService {
      * @param userSaveDTO
      */
     @Override
+    @Transactional
     public void save(AddUserDTO addUserDTO) {
         if (userMapper.findByUsername(addUserDTO.getUsername()) != null) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
@@ -124,8 +128,16 @@ public class UserServiceImpl implements UserService {
             setPassword(newUser);
             newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
             userMapper.save(newUser);
+
+            // 关联角色
+            List<Integer> roleIds = newUser.getRoleIds();
+            if (roleIds != null && !roleIds.isEmpty()) {
+                List<UserRole> userRoleList = roleIds.stream()
+                        .map(roleId -> new UserRole(newUser.getId(), roleId))
+                        .collect(Collectors.toList());
+//                userRoleMapper.saveUserRole(userRoleList);
+            }
         }
-        // TODO 关联角色
     }
 
     /**
@@ -134,9 +146,11 @@ public class UserServiceImpl implements UserService {
      * @param id
      */
     @Override
+    @Transactional
     public void delete(Integer id) {
+        // 删除用户角色关联
+        // userRoleMapper.remove(id);
         userMapper.deleteById(id);
-        // TODO 删除用户角色关联
     }
 
     /**
@@ -145,6 +159,7 @@ public class UserServiceImpl implements UserService {
      * @param userDTO
      */
     @Override
+    @Transactional
     public void update(User user) {
         User existingUser = userMapper.findByUsername(user.getUsername());
         if (existingUser != null && !existingUser.getId().equals(user.getId())) {
@@ -158,7 +173,15 @@ public class UserServiceImpl implements UserService {
         }
         userMapper.update(newUser);
 
-        // TODO 修改用户角色关联
+        // 修改用户角色关联，先删在存
+//        userRoleMapper.remove(id);
+//        List<Integer> roleIds = newUser.getRoleIds();
+//        if (roleIds != null && !roleIds.isEmpty()) {
+//            List<UserRole> userRoleList = roleIds.stream()
+//                    .map(roleId -> new UserRole(newUser.getId(), roleId))
+//                    .collect(Collectors.toList());
+//                userRoleMapper.saveUserRole(userRoleList);
+//        }
     }
 
     /**

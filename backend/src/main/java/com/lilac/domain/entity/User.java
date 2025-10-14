@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (User)表实体类
@@ -36,6 +37,8 @@ public class User {
     private LocalDateTime updateTime;
     //逻辑删除(0未删除，1删除)
     private String delFlag;
+    //角色id集合
+    private List<Integer> roleIds;
 
 }
 
