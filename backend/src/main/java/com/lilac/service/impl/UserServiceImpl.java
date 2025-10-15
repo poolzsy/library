@@ -14,6 +14,7 @@ import com.lilac.domain.vo.UserVO;
 import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.exception.SystemException;
 import com.lilac.mapper.UserMapper;
+import com.lilac.mapper.UserRoleMapper;
 import com.lilac.service.UserService;
 import com.lilac.utils.BeanCopyUtils;
 import com.lilac.utils.JwtUtils;
@@ -43,6 +44,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserRoleMapper userRoleMapper;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
