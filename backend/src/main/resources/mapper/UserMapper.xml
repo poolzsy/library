@@ -44,7 +44,6 @@
         select * from user
         <where>
             del_flag = 0
-            And status = 0
             <if test="userName != null and userName != ''">
                 AND user_name like concat('%', #{userName}, '%')
             </if>
