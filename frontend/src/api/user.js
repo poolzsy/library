@@ -40,6 +40,14 @@ export function updateUser(data) {
     });
 }
 
+export function updateUserStatus(data) {
+    return request({
+        url: '/user/update',
+        method: 'put',
+        data
+    });
+}
+
 export function deleteUser(id) {
     return request({
         url: `/user/delete/${id}`,
