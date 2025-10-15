@@ -42,8 +42,8 @@
                                 </el-icon>
                                 <span>用户管理</span>
                             </template>
-                            <el-menu-item index="/admin">管理员列表</el-menu-item>
                             <el-menu-item index="/user">用户列表</el-menu-item>
+                            <el-menu-item index="/role">角色列表</el-menu-item>
                         </el-sub-menu>
                         <el-sub-menu index="book-management">
                             <template #title>

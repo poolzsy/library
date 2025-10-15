@@ -21,6 +21,8 @@ public class RoleVO {
     private String roleKey;
     //角色描述
     private String remark;
+    //角色状态(0正常，1禁用)
+    private String status;
 
     private LocalDateTime createTime;
 

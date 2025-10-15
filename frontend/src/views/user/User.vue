@@ -20,10 +20,12 @@
             <el-table :data="userList" style="width: 100%" v-loading="loading">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column prop="id" label="ID" width="80" align="center" />
-                <el-table-column prop="username" label="用户名" width="180" />
-                <el-table-column prop="nickname" label="昵称" width="180" />
+                <el-table-column prop="avatar" label="头像" width="80" /> 
+                <el-table-column prop="userName" label="用户名" width="180" />
+                <el-table-column prop="nickName" label="昵称" width="180" />
                 <el-table-column prop="phone" label="手机号" width="180" />
-                <el-table-column prop="email" label="邮箱" />
+                <el-table-column prop="email" label="邮箱" width="180" />
+                <el-table-column prop="status" label="状态" width="180" align="center"></el-table-column>
                 <el-table-column label="操作" width="200" align="center" fixed="right">
                     <template #default="scope">
                         <el-button type="primary" size="small" link @click="handleEdit(scope.row)">编辑</el-button>
@@ -45,17 +47,26 @@
     <el-dialog v-model="dialog.visible" :title="dialog.title" width="40%" :close-on-click-modal="false"
         @close="resetForm">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-            <el-form-item label="用户名" prop="username">
-                <el-input v-model="form.username" :disabled="!!form.id" placeholder="请输入用户名" />
+            <el-form-item label="用户名" prop="userName">
+                <el-input v-model="form.userName" :disabled="!!form.id" placeholder="请输入用户名" />
             </el-form-item>
-            <el-form-item label="昵称" prop="nickname">
-                <el-input v-model="form.nickname" placeholder="请输入昵称" />
+            <el-form-item label="昵称" prop="nickName">
+                <el-input v-model="form.nickName" placeholder="请输入昵称" />
             </el-form-item>
             <el-form-item label="手机号" prop="phone">
                 <el-input v-model="form.phone" placeholder="请输入手机号" />
             </el-form-item>
             <el-form-item label="邮箱" prop="email">
                 <el-input v-model="form.email" placeholder="请输入邮箱" />
+            </el-form-item>
+            <el-form-item label="头像" prop="avatar">
+                <el-input v-model="form.avatar" placeholder="请输入头像链接" />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="form.status" placeholder="请选择状态">
+                    <el-option label="启用" value="enabled" />
+                    <el-option label="禁用" value="disabled" />
+                </el-select>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -82,7 +93,7 @@ const total = ref(0)
 const params = reactive({
     pageNum: 1,
     pageSize: 10,
-    username: '',
+    userName: '',
 });
 
 const dialog = reactive({
@@ -94,17 +105,19 @@ const dialog = reactive({
 const formRef = ref(null)
 const initialForm = {
     id: null,
-    username: '',
-    nickname: '',
+    userName: '',
+    nickName: '',
     phone: '',
     email: '',
+    avatar: '',
+    status: 'enabled',
 }
 const form = reactive({ ...initialForm })
 
 // 表单验证规则
 const rules = {
-    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-    nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+    userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+    nickName: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
 }
 
 // 获取用户列表数据
@@ -131,7 +144,7 @@ const searchQuery = () => {
 
 // 重置搜索
 const resetQuery = () => {
-    params.username = '';
+    params.userName = '';
     searchQuery();
 }
 

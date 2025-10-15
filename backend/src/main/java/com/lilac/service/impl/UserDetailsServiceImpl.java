@@ -21,13 +21,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * 根据用户名查询用户信息
-     * @param username 用户名
+     * @param userName 用户名
      * @return 用户信息
      * @throws UsernameNotFoundException 用户不存在
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userMapper.findByUsername(username);
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        User user = userMapper.findByUserName(userName);
         if (Objects.isNull(user)){
             throw new UsernameNotFoundException(HttpsCodeEnum.USER_OR_PASSWORD_ERROR.getMsg());
         }

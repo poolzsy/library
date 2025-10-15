@@ -23,6 +23,8 @@ public class Role {
     private String roleKey;
     //角色描述
     private String remark;
+    //状态(0正常，1禁用)
+    private String status;
     //逻辑删除(0未删除，1已删除)
     private String delFlag;
 

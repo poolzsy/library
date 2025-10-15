@@ -13,7 +13,6 @@ import com.lilac.domain.vo.PageVO;
 import com.lilac.domain.vo.UserVO;
 import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.exception.SystemException;
-import com.lilac.mapper.RoleMapper;
 import com.lilac.mapper.UserMapper;
 import com.lilac.service.UserService;
 import com.lilac.utils.BeanCopyUtils;
@@ -60,7 +59,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String login(UserLoginDTO loginDTO) {
         // 解密密码
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword());
         // 调用认证管理器进行认证
         Authentication authenticate;
         try {
@@ -87,16 +86,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(UserLoginDTO loginDTO) {
         // 检查用户名是否已存在
-        if (userMapper.findByUsername(loginDTO.getUsername()) != null) {
+        if (userMapper.findByUserName(loginDTO.getUserName()) != null) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         }
         // 使用BCrypt对明文密码进行哈希处理
         String hashedPassword = passwordEncoder.encode(loginDTO.getPassword());
         // 创建用户实体并存入数据库
         User newUser = new User();
-        newUser.setUsername(loginDTO.getUsername());
+        newUser.setUserName(loginDTO.getUserName());
         newUser.setPassword(hashedPassword);
         newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
+        newUser.setStatus(SystemConstant.DEFAULT_STATUS);
 
         userMapper.save(newUser);
     }
@@ -120,13 +120,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void save(AddUserDTO addUserDTO) {
-        if (userMapper.findByUsername(addUserDTO.getUsername()) != null) {
+        if (userMapper.findByUserName(addUserDTO.getUserName()) != null) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         } else {
             User newUser = new User();
             BeanUtils.copyProperties(addUserDTO, newUser);
             setPassword(newUser);
             newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
+            newUser.setStatus(SystemConstant.DEFAULT_STATUS);
             userMapper.save(newUser);
 
             // 关联角色
@@ -161,7 +162,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(User user) {
-        User existingUser = userMapper.findByUsername(user.getUsername());
+        User existingUser = userMapper.findByUserName(user.getUserName());
         if (existingUser != null && !existingUser.getId().equals(user.getId())) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         }

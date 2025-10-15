@@ -19,11 +19,11 @@ public interface UserMapper{
     /**
      * 通过用户名查询用户
      *
-     * @param username 用户名
+     * @param userName 用户名
      * @return 用户
      */
-    @Select("select * from user where username = #{username} and del_flag = 0")
-    User findByUsername(String username);
+    @Select("select * from user where user_name = #{userName} and status = 0 and del_flag = 0")
+    User findByUserName(String userName);
 
     /**
      * 保存用户
@@ -38,7 +38,7 @@ public interface UserMapper{
      *
      * @return 用户
      */
-    @Select("select * from user where id = #{id} and del_flag = 0")
+    @Select("select * from user where id = #{id} and status = 0 and del_flag = 0")
     User selectById(Integer id);
 
     /**
