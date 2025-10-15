@@ -275,5 +275,5 @@ const handlePageChange = (newPage) => {
 </script>
 
 <style scoped>
-@import '@/assets/css/User.css';
+@import '@/assets/css/View.css';
 </style>
