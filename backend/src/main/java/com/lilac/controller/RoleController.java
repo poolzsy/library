@@ -60,7 +60,7 @@ public class RoleController {
      * 修改角色信息
      */
     @PutMapping("/update")
-    public Result update( Role role) {
+    public Result update(@RequestBody Role role) {
         log.info("修改角色信息");
         roleService.update(role);
         return Result.success();
