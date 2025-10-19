@@ -75,4 +75,12 @@ public class RoleServiceImpl implements RoleService {
     public void update(Role role) {
         roleMapper.update(role);
     }
+
+    /**
+     * 查询所有角色
+     */
+    @Override
+    public List<Role> listAll() {
+        return roleMapper.listAll();
+    }
 }

@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/role")
 @Slf4j
@@ -64,5 +66,15 @@ public class RoleController {
         log.info("修改角色信息");
         roleService.update(role);
         return Result.success();
+    }
+
+    /**
+     * 查询所有角色
+     */
+    @GetMapping("/listAll")
+    public Result listAll() {
+        log.info("查询所有角色");
+        List<Role> roleList = roleService.listAll();
+        return Result.success(roleList);
     }
 }

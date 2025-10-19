@@ -38,3 +38,10 @@ export function deleteRole(id) {
         method: 'delete'
     });
 }
+
+export function getAllRoleList(id) {
+    return request({
+        url: `/role/listAll`,
+        method: 'get'
+    });
+}

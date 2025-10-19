@@ -5,6 +5,8 @@ import com.lilac.domain.dto.RoleDTO;
 import com.lilac.domain.entity.Role;
 import com.lilac.domain.vo.PageVO;
 
+import java.util.List;
+
 /**
  * (Role)表服务接口
  *
@@ -35,4 +37,9 @@ public interface RoleService {
      * 修改角色信息
      */
     void update(Role role);
+
+    /**
+     * 查询所有角色
+     */
+    List<Role> listAll();
 }

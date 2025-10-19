@@ -45,4 +45,10 @@ public interface RoleMapper {
      */
     @AutoFill(OperationType.UPDATE)
     void update(Role role);
+
+    /**
+     * 查询所有角色
+     */
+    @Select("select * from role where del_flag = 0")
+    List<Role> listAll();
 }
