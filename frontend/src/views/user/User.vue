@@ -77,6 +77,12 @@
                     <el-radio :label="1">禁用</el-radio>
                 </el-radio-group>
             </el-form-item>
+            <el-form-item label="角色" prop="roleList">
+                <el-select v-model="form.roleList" multiple placeholder="请选择角色">zone">
+                    <el-option v-for="role in roleList" :key="role.id" :label="role.roleName" :value="role.id" @click="selectRole(role)">
+                    </el-option>
+                </el-select>
+            </el-form-item>
         </el-form>
         <template #footer>
             <span class="dialog-footer">
@@ -92,6 +98,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Search, Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getUserList, addUser, updateUser, deleteUser, updateUserStatus } from '@/api/user'
+import { getAllRoleList } from '@/api/role'
 
 const loading = ref(false)
 const isSubmitting = ref(false)
@@ -136,7 +143,7 @@ const getUserListData = async () => {
         const res = await getUserList(params);
         const processedList = res.data.rows.map(user => {
             return {
-                ...user, 
+                ...user,
                 status: parseInt(user.status, 10)
             };
         });
@@ -272,6 +279,11 @@ const handlePageChange = (newPage) => {
     params.pageNum = newPage;
     getUserListData();
 };
+
+// 查询所有角色
+const selectRole = () => {
+    form.roleList = getAllRoleList();
+}
 </script>
 
 <style scoped>
