@@ -35,15 +35,11 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public Role SelectById(Integer id) {
-        Role role = roleMapper.SelectById();
-        return role;
+        return roleMapper.SelectById(id);
     }
 
     /**
-     * 分页查询
-     *
-     * @param roleDTO 筛选条件
-     * @return 查询结果
+     * 分页查询角色
      */
     @Override
     public PageVO page(RoleDTO roleDTO) {

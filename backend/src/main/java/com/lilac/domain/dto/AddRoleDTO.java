@@ -18,4 +18,6 @@ public class AddRoleDTO {
     private String roleKey;
     //角色描述
     private String remark;
+    //角色状态
+    private String status;
 }

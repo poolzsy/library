@@ -17,12 +17,11 @@ import java.util.List;
  */
 @Mapper
 public interface RoleMapper {
-
     /**
      * 通过id查询角色
      */
     @Select("select * from role where id = #{id} and del_flag = 0 ")
-    Role SelectById();
+    Role SelectById(Integer id);
 
     /**
      * 查询角色
