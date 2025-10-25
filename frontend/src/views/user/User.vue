@@ -78,9 +78,9 @@
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="角色" prop="roleList">
-                <el-select v-model="form.roleList" multiple placeholder="请选择角色">zone">
-                    <el-option v-for="role in roleList" :key="role.id" :label="role.roleName" :value="role.id" @click="selectRole(role)">
-                    </el-option>
+                <el-select v-model="form.roleList" multiple filterable placeholder="请选择角色" style="width: 100%;"
+                    @visible-change="handleRoleSelectVisible">
+                    <el-option v-for="role in roleOptions" :key="role.id" :label="role.roleName" :value="role.id" />
                 </el-select>
             </el-form-item>
         </el-form>
@@ -104,6 +104,7 @@ const loading = ref(false)
 const isSubmitting = ref(false)
 const userList = ref([])
 const total = ref(0)
+const roleOptions = ref([])
 
 // 搜索和分页参数
 const params = reactive({
@@ -127,6 +128,7 @@ const initialForm = {
     email: '',
     avatar: '',
     status: 0,
+    roleList: []
 }
 const form = reactive({ ...initialForm })
 
@@ -158,6 +160,24 @@ const getUserListData = async () => {
 
 onMounted(getUserListData);
 
+// 获取所有角色列表
+const getRoleOptions = async () => {
+    try {
+        const res = await getAllRoleList();
+        roleOptions.value = res.data;
+    } catch (error) {
+        console.error("Failed to fetch role list:", error);
+        ElMessage.error("获取角色列表失败");
+    }
+}
+
+// 角色选择框可见时获取角色列表
+const handleRoleSelectVisible = (visible) => {
+    if (visible && roleOptions.value.length === 0) {
+        getRoleOptions();
+    }
+}
+
 // 搜索
 const searchQuery = () => {
     params.pageNum = 1;
@@ -181,7 +201,9 @@ const handleAdd = () => {
 const handleEdit = (row) => {
     dialog.title = '编辑用户';
     nextTick(() => {
-        Object.assign(form, row);
+        const formData = JSON.parse(JSON.stringify(row));
+        formData.roleList = (formData.roleList || []).map(role => role.id);
+        Object.assign(form, formData);
     });
     dialog.visible = true;
 }
@@ -279,11 +301,6 @@ const handlePageChange = (newPage) => {
     params.pageNum = newPage;
     getUserListData();
 };
-
-// 查询所有角色
-const selectRole = () => {
-    form.roleList = getAllRoleList();
-}
 </script>
 
 <style scoped>

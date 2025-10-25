@@ -79,12 +79,13 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Search, Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getRoleList, addRole, updateRole, deleteRole } from '@/api/role'
+import { getRoleList, addRole, updateRole, deleteRole, updateRoleStatus} from '@/api/role'
 
 const loading = ref(false)
 const isSubmitting = ref(false)
 const roleList = ref([])
 const total = ref(0)
+const roleOptions = ref([])
 
 // 搜索和分页参数
 const params = reactive({
@@ -120,7 +121,13 @@ const getRoleListData = async () => {
     loading.value = true;
     try {
         const res = await getRoleList(params);
-        roleList.value = res.data.rows;
+        
+        const processedList = res.data.rows.map(role => ({
+            ...role,
+            status: parseInt(role.status, 10)
+        }));
+        
+        roleList.value = processedList;
         total.value = res.data.total;
     } catch (error) {
         console.error("Failed to fetch role list:", error);

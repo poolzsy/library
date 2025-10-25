@@ -6,6 +6,7 @@ import com.lilac.domain.dto.AddRoleDTO;
 import com.lilac.domain.dto.RoleDTO;
 import com.lilac.domain.entity.Role;
 import com.lilac.domain.vo.PageVO;
+import com.lilac.domain.vo.RoleVO;
 import com.lilac.mapper.RoleMapper;
 import com.lilac.service.RoleService;
 import com.lilac.utils.BeanCopyUtils;
@@ -45,8 +46,8 @@ public class RoleServiceImpl implements RoleService {
     public PageVO page(RoleDTO roleDTO) {
         PageHelper.startPage(roleDTO.getPageNum(), roleDTO.getPageSize());
         List<Role> roleList = roleMapper.page(roleDTO);
-        List<Role> roleVOList = BeanCopyUtils.copyBeanList(roleList, Role.class);
-        PageInfo<Role> pageInfo = new PageInfo<>(roleVOList);
+        List<RoleVO> roleVOList = BeanCopyUtils.copyBeanList(roleList, RoleVO.class);
+        PageInfo<RoleVO> pageInfo = new PageInfo<>(roleVOList);
         return new PageVO(pageInfo.getTotal(), pageInfo.getList());
     }
 
