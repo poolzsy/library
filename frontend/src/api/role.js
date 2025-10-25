@@ -39,7 +39,7 @@ export function deleteRole(id) {
     });
 }
 
-export function getAllRoleList(id) {
+export function getAllRoleList() {
     return request({
         url: `/role/listAll`,
         method: 'get'

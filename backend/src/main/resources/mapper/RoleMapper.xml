@@ -25,6 +25,7 @@
                 update_time = #{updateTime},
             </if>
         </set>
+        where id = #{id}
     </update>
 
     <select id="page" resultType="com.lilac.domain.entity.Role">
