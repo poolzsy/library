@@ -54,3 +54,11 @@ export function deleteUser(id) {
         method: 'delete'
     });
 }
+
+export function getUserById(id) {
+    return request({
+        url: `/user/${id}`,
+        method: 'get'
+    });
+    
+}

@@ -7,6 +7,7 @@ import com.lilac.domain.entity.User;
 import com.lilac.domain.vo.PageVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * (User)表服务接口
@@ -25,9 +26,9 @@ public interface UserService{
     void register(UserLoginDTO userLoginDTO);
 
     /**
-     * 根据id查询用户
+     * 根据id查询角色
      */
-    User selectById(Integer id);
+    Map<String, Object> selectById(Integer id);
 
     /**
      * 新增用户信息

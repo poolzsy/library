@@ -45,7 +45,7 @@ public class UserController {
     }
 
     /**
-     * 根据id查询修用户
+     * 根据id查询修角色信息
      */
     @GetMapping("/{id}")
     public Result getUserById(@PathVariable Integer id) {
