@@ -7,6 +7,7 @@ import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
 import com.lilac.domain.entity.LoginUser;
+import com.lilac.domain.entity.Role;
 import com.lilac.domain.entity.User;
 import com.lilac.domain.entity.UserRole;
 import com.lilac.domain.vo.PageVO;
@@ -14,13 +15,13 @@ import com.lilac.domain.vo.UserVO;
 import com.lilac.enums.HttpsCodeEnum;
 import com.lilac.exception.SystemException;
 import com.lilac.mapper.UserMapper;
+import com.lilac.service.RoleService;
 import com.lilac.service.UserRoleService;
 import com.lilac.service.UserService;
 import com.lilac.utils.BeanCopyUtils;
 import com.lilac.utils.JwtUtils;
 import com.lilac.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,7 +31,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +49,8 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -105,14 +110,27 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 根据id查询用户
+     * 根据id查询角色
      *
      * @param id 用户id
      */
     @Override
-    public User selectById(Integer id) {
+    public Map<String, Object> selectById(Integer id) {
+        // 查询用户
         User user = userMapper.selectById(id);
-        return user;
+        if (user == null){
+            throw new SystemException(HttpsCodeEnum.RESOURCE_NOT_FOUND);
+        }
+        UserVO userVO = BeanCopyUtils.copyBean(user, UserVO.class);
+        // 获取用户角色列表
+        List<Integer> roleIds = userRoleService.listUserRole(user.getId()).stream().map(UserRole::getRoleId).collect(Collectors.toList());
+        // 获取角色列表
+        List<Role> roles = roleService.listAll();
+        Map<String, Object> data = new HashMap<>();
+        data.put("user", userVO);
+        data.put("roles", roles);
+        data.put("roleIds", roleIds);
+        return data;
     }
 
     /**
@@ -126,8 +144,7 @@ public class UserServiceImpl implements UserService {
         if (userMapper.findByUserName(addUserDTO.getUserName()) != null) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         } else {
-            User newUser = new User();
-            BeanUtils.copyProperties(addUserDTO, newUser);
+            User newUser = BeanCopyUtils.copyBean(addUserDTO, User.class);
             setPassword(newUser);
             newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
             newUser.setStatus(SystemConstant.DEFAULT_STATUS);
@@ -135,12 +152,7 @@ public class UserServiceImpl implements UserService {
 
             // 关联角色
             List<Integer> roleIds = newUser.getRoleIds();
-            if (roleIds != null && !roleIds.isEmpty()) {
-                List<UserRole> userRoleList = roleIds.stream()
-                        .map(roleId -> new UserRole(newUser.getId(), roleId))
-                        .collect(Collectors.toList());
-                userRoleService.saveUserRole(userRoleList);
-            }
+            associateUserRoles(newUser.getId(), roleIds);
         }
     }
 
@@ -153,7 +165,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(Integer id) {
         // 删除用户角色关联
-        // userRoleMapper.remove(id);
+        userRoleService.remove(id);
         userMapper.deleteById(id);
     }
 
@@ -169,8 +181,7 @@ public class UserServiceImpl implements UserService {
         if (existingUser != null && !existingUser.getId().equals(user.getId())) {
             throw new SystemException(HttpsCodeEnum.USER_EXIST);
         }
-        User newUser = new User();
-        BeanUtils.copyProperties(user, newUser);
+        User newUser = BeanCopyUtils.copyBean(user, User.class);
         // 只有当传入的密码不为空时才更新密码
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             newUser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -178,14 +189,9 @@ public class UserServiceImpl implements UserService {
         userMapper.update(newUser);
 
         // 修改用户角色关联，先删在存
-//        userRoleMapper.remove(id);
-//        List<Integer> roleIds = newUser.getRoleIds();
-//        if (roleIds != null && !roleIds.isEmpty()) {
-//            List<UserRole> userRoleList = roleIds.stream()
-//                    .map(roleId -> new UserRole(newUser.getId(), roleId))
-//                    .collect(Collectors.toList());
-//                userRoleMapper.saveUserRole(userRoleList);
-//        }
+        userRoleService.remove(user.getId());
+        List<Integer> roleIds = newUser.getRoleIds();
+        associateUserRoles(user.getId(), roleIds);
     }
 
     /**
@@ -207,11 +213,23 @@ public class UserServiceImpl implements UserService {
     /**
      * 设置默认密码
      */
-    public void setPassword(User user) {
+    private void setPassword(User user) {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(SystemConstant.DEFAULT_PASSWORD));
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+    }
+
+    /**
+     * 批量关联用户角色
+     */
+    private void associateUserRoles(Integer userId, List<Integer> roleIds) {
+        if (roleIds != null && !roleIds.isEmpty()) {
+            List<UserRole> userRoleList = roleIds.stream()
+                    .map(roleId -> new UserRole(userId, roleId))
+                    .collect(Collectors.toList());
+            userRoleService.saveUserRole(userRoleList);
         }
     }
 }

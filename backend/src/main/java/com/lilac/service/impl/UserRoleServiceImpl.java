@@ -26,4 +26,20 @@ public class UserRoleServiceImpl implements UserRoleService {
     public void saveUserRole(List<UserRole> userRoleList) {
         userRoleMapper.saveBatch(userRoleList);
     }
+
+    /**
+     * 查询用户角色关联
+     */
+    @Override
+    public List<UserRole> listUserRole(Integer userId) {
+        return userRoleMapper.listUserRole(userId);
+    }
+
+    /**
+     * 删除用户角色关联
+     */
+    @Override
+    public void remove(Integer id) {
+        userRoleMapper.remove(id);
+    }
 }

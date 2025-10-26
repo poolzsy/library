@@ -128,7 +128,7 @@ const getRoleListData = async () => {
         }));
         
         roleList.value = processedList;
-        total.value = res.data.total;
+        total.value = res.data.total; 
     } catch (error) {
         console.error("Failed to fetch role list:", error);
     } finally {

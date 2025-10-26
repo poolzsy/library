@@ -77,8 +77,8 @@
                     <el-radio :label="1">禁用</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="角色" prop="roleList">
-                <el-select v-model="form.roleList" multiple filterable placeholder="请选择角色" style="width: 100%;"
+            <el-form-item label="角色" prop="roleIds">
+                <el-select v-model="form.roleIds" multiple filterable placeholder="请选择角色" style="width: 100%;"
                     @visible-change="handleRoleSelectVisible">
                     <el-option v-for="role in roleOptions" :key="role.id" :label="role.roleName" :value="role.id" />
                 </el-select>
@@ -97,7 +97,7 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Search, Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getUserList, addUser, updateUser, deleteUser, updateUserStatus } from '@/api/user'
+import { getUserList, addUser, updateUser, deleteUser, updateUserStatus, getUserById } from '@/api/user'
 import { getAllRoleList } from '@/api/role'
 
 const loading = ref(false)
@@ -128,15 +128,27 @@ const initialForm = {
     email: '',
     avatar: '',
     status: 0,
-    roleList: []
+    roleIds: []
 }
 const form = reactive({ ...initialForm })
 
 // 表单验证规则
-const rules = {
-    userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-    nickName: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-}
+const rules = reactive({
+    userName: [
+        { required: true, message: '请输入用户名', trigger: 'blur' },
+        { min: 2, max: 20, message: '用户名长度应为 2 到 20 个字符', trigger: 'blur' }
+    ],
+    nickName: [
+        { required: true, message: '请输入昵称', trigger: 'blur' },
+        { min: 2, max: 20, message: '昵称长度应为 2 到 20 个字符', trigger: 'blur' }
+    ],
+    phone: [
+        { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+    ],
+    email: [
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+    ]
+})
 
 // 获取用户列表数据
 const getUserListData = async () => {
@@ -198,14 +210,23 @@ const handleAdd = () => {
 }
 
 // 处理编辑
-const handleEdit = (row) => {
+const handleEdit = async (row) => {
     dialog.title = '编辑用户';
-    nextTick(() => {
-        const formData = JSON.parse(JSON.stringify(row));
-        formData.roleList = (formData.roleList || []).map(role => role.id);
-        Object.assign(form, formData);
-    });
+    resetForm();
     dialog.visible = true;
+    try {
+        const res = await getUserById(row.id);
+        const userDetails = res.data.user;
+        nextTick(() => {
+            Object.assign(form, userDetails);
+            form.roleIds = res.data.roleIds || [];
+        });
+    } catch (error) {
+        console.error("获取用户详情失败:", error);
+        ElMessage.error("获取用户详情失败，请稍后重试");
+        // 如果获取失败，最好关闭对话框
+        dialog.visible = false;
+    }
 }
 
 // 处理删除
@@ -287,6 +308,7 @@ const submitForm = () => {
 
 // 重置表单
 const resetForm = () => {
+    Object.assign(form, initialForm);
     if (formRef.value) {
         formRef.value.clearValidate();
     }

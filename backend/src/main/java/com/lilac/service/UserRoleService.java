@@ -14,4 +14,14 @@ public interface UserRoleService {
      * 批量保存用户角色关系
      */
     void saveUserRole(List<UserRole> userRoleList);
+
+    /**
+     * 查询用户角色关系
+     */
+    List<UserRole> listUserRole(Integer id);
+
+    /**
+     * 删除用户角色关系
+     */
+    void remove(Integer id);
 }
