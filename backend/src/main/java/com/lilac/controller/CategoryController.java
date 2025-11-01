@@ -38,7 +38,7 @@ public class CategoryController {
     /**
      * 删除分类
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable Integer id) {
         log.info("删除分类");
         CategoryService.delete(id);
