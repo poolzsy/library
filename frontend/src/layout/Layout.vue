@@ -52,6 +52,7 @@
                                 </el-icon>
                                 <span>图书管理</span>
                             </template>
+                            <el-menu-item index="/bookCategory">图书分类</el-menu-item>
                             <el-menu-item index="/book-list">图书列表</el-menu-item>
                         </el-sub-menu>
                     </el-menu>
