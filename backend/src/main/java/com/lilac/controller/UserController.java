@@ -3,12 +3,17 @@ package com.lilac.controller;
 import com.lilac.domain.dto.UserDTO;
 import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserLoginDTO;
+import com.lilac.domain.entity.LoginUser;
 import com.lilac.domain.entity.User;
 import com.lilac.domain.result.Result;
 import com.lilac.domain.vo.PageVO;
+import com.lilac.domain.vo.UserVO;
 import com.lilac.service.UserService;
+import com.lilac.utils.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -91,6 +96,18 @@ public class UserController {
         log.info("分页查询");
         PageVO pagevo = userService.page(userDTO);
         return Result.success(pagevo);
+    }
+
+    /**
+     * 查询当前登录用户信息
+     */
+    @GetMapping("/info")
+    public Result pageInfo() {
+        log.info("查询当前登录用户信息");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        UserVO userVO = BeanCopyUtils.copyBean(loginUser.getUser(), UserVO.class);
+        return Result.success(userVO);
     }
 
 }
