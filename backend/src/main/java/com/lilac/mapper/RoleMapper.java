@@ -51,4 +51,16 @@ public interface RoleMapper {
      */
     @Select("select * from role where del_flag = 0")
     List<Role> listAll();
+
+    /**
+     * 通过角色名查询角色
+     */
+    @Select("select * from role where role_name = #{roleName} and del_flag = 0")
+    Role SelectByRoleName(String roleName);
+
+    /**
+     * 通过权限标识查询角色
+     */
+    @Select("select * from role where role_key = #{roleKey} and del_flag = 0")
+    Role SelectByRoleKey(String roleKey);
 }

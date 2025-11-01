@@ -2,20 +2,26 @@ package com.lilac.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.lilac.constant.ExceptionConstant;
 import com.lilac.domain.dto.AddRoleDTO;
 import com.lilac.domain.dto.RoleDTO;
 import com.lilac.domain.entity.Role;
 import com.lilac.domain.vo.PageVO;
 import com.lilac.domain.vo.RoleVO;
+import com.lilac.enums.HttpsCodeEnum;
+import com.lilac.exception.SystemException;
 import com.lilac.mapper.RoleMapper;
 import com.lilac.service.RoleService;
+import com.lilac.service.UserRoleService;
 import com.lilac.utils.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * (Role)表服务实现类
@@ -23,11 +29,12 @@ import java.util.List;
  * @author lilac
  */
 @Service("roleService")
-@Slf4j
 public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private UserRoleService userRoleService;
 
     /**
      * 通过id查询角色
@@ -36,6 +43,10 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public Role SelectById(Integer id) {
+        // 增加对非法ID的校验
+        if (id == null || id <= 0) {
+            throw new SystemException(HttpsCodeEnum.DATA_ERROR, ExceptionConstant.ROLE_ID_NOT_NULL);
+        }
         return roleMapper.SelectById(id);
     }
 
@@ -56,6 +67,23 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public void save(AddRoleDTO addRoleDTO) {
+        // 输入校验
+        if (!StringUtils.hasText(addRoleDTO.getRoleName())) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EMPTY, ExceptionConstant.ROLE_NAME_NOT_NULL);
+        }
+        if (!StringUtils.hasText(addRoleDTO.getRoleKey())) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EMPTY, ExceptionConstant.ROLE_KEY_NOT_NULL);
+        }
+        // 唯一性校验
+        Role existingRoleByName = roleMapper.SelectByRoleName(addRoleDTO.getRoleName());
+        if (existingRoleByName != null) {
+            throw new SystemException(HttpsCodeEnum.DATA_EXIST, ExceptionConstant.ROLE_EXIST);
+        }
+        Role existingRoleByKey = roleMapper.SelectByRoleKey(addRoleDTO.getRoleKey());
+        if (existingRoleByKey != null) {
+            throw new SystemException(HttpsCodeEnum.DATA_EXIST, ExceptionConstant.ROLE_KEY_EXIST);
+        }
+
         Role role = new Role();
         BeanUtils.copyProperties(addRoleDTO, role);
         roleMapper.save(role);
@@ -66,6 +94,13 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public void deleteRoleById(Integer id) {
+        // 判断角色是否存在
+        Role role = roleMapper.SelectById(id);
+        if (role == null) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EXIST, ExceptionConstant.ROLE_NOT_EXIST);
+        }
+        // 删除用户角色关联
+        userRoleService.removeByRoleId(id);
         roleMapper.deleteById(id);
     }
 
@@ -74,6 +109,31 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public void update(Role role) {
+        // 输入参数校验
+        if (role.getId() == null) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EMPTY, ExceptionConstant.ROLE_ID_NOT_NULL);
+        }
+        if (!StringUtils.hasText(role.getRoleName())) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EMPTY, ExceptionConstant.ROLE_NAME_NOT_NULL);
+        }
+        // 角色是否存在
+        Role existingRole = roleMapper.SelectById(role.getId());
+        if (existingRole == null) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EXIST, ExceptionConstant.ROLE_NOT_EXIST);
+        }
+        // 角色名是否与其它角色冲突
+        Role roleWithSameName = roleMapper.SelectByRoleName(role.getRoleName());
+        if (roleWithSameName != null && !Objects.equals(roleWithSameName.getId(), role.getId())) {
+            throw new SystemException(HttpsCodeEnum.DATA_EXIST, ExceptionConstant.ROLE_EXIST);
+        }
+        // 角色权限标识是否与其它角色冲突
+        if (StringUtils.hasText(role.getRoleKey())) {
+            Role roleWithSameKey = roleMapper.SelectByRoleKey(role.getRoleKey());
+            if (roleWithSameKey != null && !Objects.equals(roleWithSameKey.getId(), role.getId())) {
+                throw new SystemException(HttpsCodeEnum.DATA_EXIST, ExceptionConstant.ROLE_KEY_EXIST);
+            }
+        }
+        // 执行更新
         roleMapper.update(role);
     }
 

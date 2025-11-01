@@ -23,5 +23,10 @@ public interface UserRoleService {
     /**
      * 删除用户角色关系
      */
-    void remove(Integer id);
+    void removeByUserId(Integer id);
+
+    /**
+     * 删除用户角色关系
+     */
+    void removeByRoleId(Integer id);
 }

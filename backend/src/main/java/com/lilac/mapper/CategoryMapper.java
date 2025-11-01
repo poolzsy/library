@@ -3,7 +3,6 @@ package com.lilac.mapper;
 import com.lilac.annotation.AutoFill;
 import com.lilac.domain.dto.CategoryDTO;
 import com.lilac.domain.entity.Category;
-import com.lilac.domain.vo.CategoryVO;
 import com.lilac.enums.OperationType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -44,5 +43,11 @@ public interface CategoryMapper {
      * 通过id查询分类
      */
     @Select ("select * from category where id = #{id} and del_flag = 0")
-    Category SelectById(Integer id);
+    Category selectById(Integer id);
+
+    /**
+     * 通过分类名查询分类
+     */
+    @Select ("select * from category where category_name = #{categoryName} and del_flag = 0")
+    Category findByCategoryName(String categoryName);
 }

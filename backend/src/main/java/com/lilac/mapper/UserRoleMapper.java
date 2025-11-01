@@ -23,7 +23,13 @@ public interface UserRoleMapper {
      * 批量删除用户角色关系
      */
     @Delete("delete from user_role where user_id = #{id}")
-    void remove(Integer id);
+    void removeByUserId(Integer id);
+
+    /**
+     * 批量删除用户角色关系
+     */
+    @Delete("delete from user_role where role_id = #{id}")
+    void removeByRoleId(Integer id);
 
     /**
      * 批量查询用户角色关系

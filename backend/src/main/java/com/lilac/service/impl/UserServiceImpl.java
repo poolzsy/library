@@ -2,6 +2,7 @@ package com.lilac.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.lilac.constant.ExceptionConstant;
 import com.lilac.constant.SystemConstant;
 import com.lilac.domain.dto.AddUserDTO;
 import com.lilac.domain.dto.UserDTO;
@@ -23,6 +24,7 @@ import com.lilac.utils.JwtUtils;
 import com.lilac.utils.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,10 +32,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +70,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public String login(UserLoginDTO loginDTO) {
+        // 参数校验
+        if (Objects.isNull(loginDTO) || !StringUtils.hasText(loginDTO.getUserName()) || !StringUtils.hasText(loginDTO.getPassword())) {
+            throw new SystemException(HttpsCodeEnum.USER_OR_PASSWORD_ERROR);
+        }
         // 解密密码
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword());
         // 调用认证管理器进行认证
@@ -93,10 +101,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void register(UserLoginDTO loginDTO) {
-        // 检查用户名是否已存在
-        if (userMapper.findByUserName(loginDTO.getUserName()) != null) {
-            throw new SystemException(HttpsCodeEnum.USER_EXIST);
-        }
         // 使用BCrypt对明文密码进行哈希处理
         String hashedPassword = passwordEncoder.encode(loginDTO.getPassword());
         // 创建用户实体并存入数据库
@@ -105,8 +109,11 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(hashedPassword);
         newUser.setType(SystemConstant.DEFAULT_USER_TYPE);
         newUser.setStatus(SystemConstant.DEFAULT_STATUS);
-
-        userMapper.save(newUser);
+        try {
+            userMapper.save(newUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new SystemException(HttpsCodeEnum.USER_EXIST);
+        }
     }
 
     /**
@@ -164,8 +171,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(Integer id) {
+        // 判断id是否存在
+        if (Objects.isNull(id) || id <= 0) {
+            throw new SystemException(HttpsCodeEnum.DATA_NOT_EMPTY, ExceptionConstant.ID_ERROR);
+        }
         // 删除用户角色关联
-        userRoleService.remove(id);
+        userRoleService.removeByUserId(id);
         userMapper.deleteById(id);
     }
 
@@ -189,7 +200,7 @@ public class UserServiceImpl implements UserService {
         userMapper.update(newUser);
 
         // 修改用户角色关联，先删在存
-        userRoleService.remove(user.getId());
+        userRoleService.removeByUserId(user.getId());
         List<Integer> roleIds = newUser.getRoleIds();
         associateUserRoles(user.getId(), roleIds);
     }

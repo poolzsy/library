@@ -39,7 +39,15 @@ public class UserRoleServiceImpl implements UserRoleService {
      * 删除用户角色关联
      */
     @Override
-    public void remove(Integer id) {
-        userRoleMapper.remove(id);
+    public void removeByUserId(Integer id) {
+        userRoleMapper.removeByUserId(id);
+    }
+
+    /**
+     * 删除用户角色关联
+     */
+    @Override
+    public void removeByRoleId(Integer id) {
+        userRoleMapper.removeByRoleId(id);
     }
 }
