@@ -25,17 +25,17 @@
                         <el-avatar :size="40" :src="scope.row.avatar" />
                     </template>
                 </el-table-column>
-                <el-table-column prop="userName" label="用户名" width="180" />
-                <el-table-column prop="nickName" label="昵称" width="180" />
-                <el-table-column prop="phone" label="手机号" width="180" />
-                <el-table-column prop="email" label="邮箱" width="180" />
+                <el-table-column prop="userName" label="用户名" min-width="150" show-overflow-tooltip />
+                <el-table-column prop="nickName" label="昵称" min-width="150" show-overflow-tooltip />
+                <el-table-column prop="phone" label="手机号" min-width="150" show-overflow-tooltip />
+                <el-table-column prop="email" label="邮箱" min-width="180" show-overflow-tooltip />
                 <el-table-column prop="status" label="状态" width="100" align="center">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" :active-value="0" :inactive-value="1"
                             :before-change="() => handleBeforeStatusChange(scope.row)" />
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" align="center" fixed="right">
+                <el-table-column label="操作" width="180" align="center" fixed="right">
                     <template #default="scope">
                         <el-button type="primary" size="small" link @click="handleEdit(scope.row)">编辑</el-button>
                         <el-button type="danger" size="small" link @click="handleDelete(scope.row.id)">删除</el-button>
@@ -317,6 +317,7 @@ const resetForm = () => {
 // --- 分页处理 ---
 const handleSizeChange = (newSize) => {
     params.pageSize = newSize;
+    params.pageNum = 1;
     getUserListData();
 };
 const handlePageChange = (newPage) => {

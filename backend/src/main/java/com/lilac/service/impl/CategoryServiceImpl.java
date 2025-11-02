@@ -38,10 +38,9 @@ public class CategoryServiceImpl implements CategoryService {
     public PageVO page(CategoryDTO categoryDTO) {
         PageHelper.startPage(categoryDTO.getPageNum(), categoryDTO.getPageSize());
         List<Category> categoryList = categoryMapper.page(categoryDTO);
-        List<CategoryVO> categoryVOList = BeanCopyUtils.copyBeanList(categoryList, CategoryVO.class);
-        PageInfo<CategoryVO> pageInfo = new PageInfo<>(categoryVOList);
-        PageVO page = new PageVO(pageInfo.getTotal(), pageInfo.getList());
-        return page;
+        PageInfo<Category> pageInfo = new PageInfo<>(categoryList);
+        List<CategoryVO> categoryVOList = BeanCopyUtils.copyBeanList(pageInfo.getList(), CategoryVO.class);
+        return new PageVO(pageInfo.getTotal(), pageInfo.getList());
     }
 
     /**

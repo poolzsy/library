@@ -20,15 +20,15 @@
             <el-table :data="categoryList" style="width: 100%" v-loading="loading">
                 <el-table-column type="selection" align="center" />
                 <el-table-column prop="id" width="80" label="ID" align="center" />
-                <el-table-column prop="categoryName" label="分类名称" />
-                <el-table-column prop="description" label="描述" />
-                <el-table-column prop="status" label="状态" align="center">
+                <el-table-column prop="categoryName" label="分类名称" min-width="200" show-overflow-tooltip />
+                <el-table-column prop="description" label="描述" show-overflow-tooltip />
+                <el-table-column prop="status" label="状态" width="100" align="center">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" :active-value="0" :inactive-value="1"
                             :before-change="() => handleBeforeStatusChange(scope.row)" />
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="200" align="center" fixed="right">
+                <el-table-column label="操作" width="180" align="center" fixed="right">
                     <template #default="scope">
                         <el-button type="primary" size="small" link @click="handleEdit(scope.row)">编辑</el-button>
                         <el-button type="danger" size="small" link @click="handleDelete(scope.row.id)">删除</el-button>
@@ -247,6 +247,7 @@ const resetForm = () => {
 // --- 分页处理 ---
 const handleSizeChange = (newSize) => {
     params.pageSize = newSize;
+    params.pageNum = 1;
     getCategoryListData();
 };
 const handlePageChange = (newPage) => {
