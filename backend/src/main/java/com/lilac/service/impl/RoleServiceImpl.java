@@ -57,9 +57,9 @@ public class RoleServiceImpl implements RoleService {
     public PageVO page(RoleDTO roleDTO) {
         PageHelper.startPage(roleDTO.getPageNum(), roleDTO.getPageSize());
         List<Role> roleList = roleMapper.page(roleDTO);
-        List<RoleVO> roleVOList = BeanCopyUtils.copyBeanList(roleList, RoleVO.class);
-        PageInfo<RoleVO> pageInfo = new PageInfo<>(roleVOList);
-        return new PageVO(pageInfo.getTotal(), pageInfo.getList());
+        PageInfo<Role> pageInfo = new PageInfo<>(roleList);
+        List<RoleVO> roleVOList = BeanCopyUtils.copyBeanList(pageInfo.getList(), RoleVO.class);
+        return new PageVO(pageInfo.getTotal(), roleVOList);
     }
 
     /**

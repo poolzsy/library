@@ -15,35 +15,51 @@
 }
 
 .search .search-input {
-    width: 300px;
+    width: 280px;
+}
+
+/* 按钮自动靠右 */
+.add-btn {
+    margin-left: auto;
 }
 
 /* 表格区域 */
 .table {
     width: 100%;
+    overflow-x: auto;
 }
 
+/* 表头样式 */
 .el-table th.el-table__cell {
     background-color: #fafafa !important;
     color: #333;
     font-weight: 600;
 }
 
+/* 为所有单元格设置统一的垂直内边距，让行高一致 */
+.el-table .el-table__cell {
+    padding: 12px 0;
+}
+
+/* 表格边框和圆角 */
 .el-table {
     border: 1px solid #ebeef5;
     border-radius: 4px;
 }
 
+/* 移除 Element Plus 默认的一些边框线，让整体更简洁 */
 .el-table--border::after,
 .el-table--group::after,
 .el-table::before {
     background-color: transparent;
 }
 
-.add-btn {
-    margin-left: auto;
+/* 操作按钮之间的间距 */
+.el-table .el-button + .el-button {
+    margin-left: 8px;
 }
 
+/* 分页容器 */
 .pagination-container {
     margin-top: 20px;
     display: flex;

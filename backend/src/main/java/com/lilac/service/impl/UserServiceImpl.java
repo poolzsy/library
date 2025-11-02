@@ -215,10 +215,9 @@ public class UserServiceImpl implements UserService {
     public PageVO page(UserDTO userDTO) {
         PageHelper.startPage(userDTO.getPageNum(), userDTO.getPageSize());
         List<User> userList = userMapper.pageList(userDTO);
-        List<UserVO> userVOList = BeanCopyUtils.copyBeanList(userList, UserVO.class);
-        PageInfo<UserVO> pageInfo = new PageInfo<>(userVOList);
-        PageVO page = new PageVO(pageInfo.getTotal(), pageInfo.getList());
-        return page;
+        PageInfo<User> pageInfo = new PageInfo<>(userList);
+        List<UserVO> userVOList = BeanCopyUtils.copyBeanList(pageInfo.getList(), UserVO.class);
+        return new PageVO(pageInfo.getTotal(), userVOList);
     }
 
     /**
