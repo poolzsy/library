@@ -69,3 +69,10 @@ export function getUserInfo() {
     method: 'get'
   })
 }
+
+export function getCaptcha() {
+  return request({
+    url: '/user/captcha',
+    method: 'get'
+  })
+}
