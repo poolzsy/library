@@ -19,14 +19,14 @@
                     show-password size="large"></el-input>
             </el-form-item>
 
-            <el-form-item label="验证码" prop="code">
+            <el-form-item label="验证码" prop="captcha">
                 <el-row :gutter="20" justify="space-between" style="width: 100%;">
                     <el-col :span="14">
-                        <el-input v-model="form.code" placeholder="请输入验证码" :prefix-icon="Key" size="large"
+                        <el-input v-model="form.captcha" placeholder="请输入验证码" :prefix-icon="Key" size="large"
                             @keyup.enter="handleSubmit"></el-input>
                     </el-col>
                     <el-col :span="10" class="captcha-col">
-                        <img :src="captchaUrl" @click="refreshCaptcha" alt="验证码" class="captcha-img" title="点击刷新" />
+                        <img :src="captchaData.captchaImage" @click="refreshCaptcha" alt="验证码" class="captcha-img" title="点击刷新" />
                     </el-col>
                 </el-row>
             </el-form-item>
@@ -47,11 +47,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { User, Lock, Key } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import { login, register } from '@/api/user';
+import { login, register, getCaptcha } from '@/api/user';
+
+// 验证码相关状态
+const captchaData = reactive({
+    captchaId: '',
+    captchaImage: ''
+});
 
 const router = useRouter();
 const formRef = ref(null);
@@ -60,17 +66,27 @@ const formMode = ref('login');
 
 const isLoginMode = computed(() => formMode.value === 'login');
 
-// 模拟验证码，实际项目中应替换为后端接口
-const captchaUrl = ref('http://localhost:9090/captcha');
-const refreshCaptcha = () => {
-    captchaUrl.value = `http://localhost:9090/captcha?t=${new Date().getTime()}`;
+// 获取并刷新验证码的函数
+const refreshCaptcha = async () => {
+    try {
+        const res = await getCaptcha();
+        captchaData.captchaId = res.data.captchaId;
+        captchaData.captchaImage = res.data.captchaImage;
+    } catch (error) {
+        ElMessage.error('获取验证码失败，请稍后重试');
+        console.error("获取验证码失败:", error);
+    }
 };
+
+onMounted(() => {
+    refreshCaptcha();
+});
 
 const form = reactive({
     username: '',
     password: '',
     confirmPassword: '',
-    code: ''
+    captcha: ''
 });
 
 // 自定义确认密码校验规则
@@ -89,7 +105,7 @@ const rules = reactive({
     username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
     password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
     confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
-    code: [{ required: false, message: '请输入验证码', trigger: 'blur' }]
+    captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
 });
 
 // 统一的提交处理
@@ -104,7 +120,7 @@ const handleSubmit = () => {
                     await handleRegister();
                 }
             } catch (error) {
-                // refreshCaptcha();
+                refreshCaptcha();
             } finally {
                 loading.value = false;
             }
@@ -114,7 +130,7 @@ const handleSubmit = () => {
 
 // 登录逻辑
 const handleLogin = async () => {
-    const loginData = { username: form.username, password: form.password, code: form.code };
+    const loginData = { username: form.username, password: form.password, captcha: form.captcha, captchaId: captchaData.captchaId };
     const res = await login(loginData);
 
     localStorage.setItem('token', res.data.token);
@@ -135,6 +151,7 @@ const toggleMode = () => {
     loading.value = false;
 
     rules.confirmPassword[0].required = !isLoginMode.value;
+    refreshCaptcha();
 };
 </script>
 

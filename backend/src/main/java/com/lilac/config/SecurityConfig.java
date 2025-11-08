@@ -40,7 +40,7 @@ public class SecurityConfig {
                 // 请求权限配置
                 .authorizeHttpRequests(authz -> authz
                         // 允许访问的公开接口
-                        .requestMatchers("/user/login","/user/register").permitAll()
+                        .requestMatchers("/user/login","/user/register","/user/captcha").permitAll()
                         // 其他所有请求都需要认证
                         .anyRequest().authenticated()
                 )

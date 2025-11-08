@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class UserLoginDTO {
     private String userName;
     private String password;
+    private String captcha;
+    private String captchaId;
 }
