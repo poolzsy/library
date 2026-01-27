@@ -74,7 +74,6 @@ const refreshCaptcha = async () => {
         captchaData.captchaImage = res.data.captchaImage;
     } catch (error) {
         ElMessage.error('获取验证码失败，请稍后重试');
-        console.error("获取验证码失败:", error);
     }
 };
 
@@ -120,6 +119,7 @@ const handleSubmit = () => {
                     await handleRegister();
                 }
             } catch (error) {
+                // 登录或注册失败后刷新验证码
                 refreshCaptcha();
             } finally {
                 loading.value = false;
@@ -145,12 +145,14 @@ const handleRegister = async () => {
     toggleMode();
 };
 
+// 切换登录模式
 const toggleMode = () => {
     formMode.value = isLoginMode.value ? 'register' : 'login';
     if (formRef.value) formRef.value.resetFields();
     loading.value = false;
 
     rules.confirmPassword[0].required = !isLoginMode.value;
+    // 刷新验证码
     refreshCaptcha();
 };
 </script>
